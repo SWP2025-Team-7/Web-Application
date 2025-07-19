@@ -1,6 +1,6 @@
 import { User, ApiResponse } from './types'
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = '/api'
 
 export class ApiService {
   private static async request<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
@@ -34,7 +34,7 @@ export class ApiService {
   }
 
   static async getUsers(): Promise<ApiResponse<User[]>> {
-    return this.request<User[]>('/users')
+    return this.request<User[]>('/users/')
   }
 
   static async getUser(userId: number): Promise<ApiResponse<User>> {

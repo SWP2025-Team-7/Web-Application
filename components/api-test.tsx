@@ -14,33 +14,24 @@ export default function ApiTest() {
     setResult("Тестирование API...")
     
     try {
-      // Тестируем разные варианты эндпоинтов
-      const endpoints = ['/users', '/users/', '/api/users', '/api/users/']
+      // Тестируем через наш прокси
+      const response = await fetch('/api/users', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
       
-      for (const endpoint of endpoints) {
-        try {
-          const response = await fetch(`http://localhost:8000${endpoint}`, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            mode: 'cors',
-          })
-          
-          console.log(`Testing ${endpoint}:`, response.status, response.statusText)
-          
-          if (response.ok) {
-            const data = await response.json()
-            setResult(`Успех! Эндпоинт ${endpoint} работает. Получено ${Array.isArray(data) ? data.length : 'данные'}`)
-            return
-          }
-        } catch (error) {
-          console.log(`Error testing ${endpoint}:`, error)
-        }
+      console.log('Testing /api/users:', response.status, response.statusText)
+      
+      if (response.ok) {
+        const data = await response.json()
+        setResult(`Успех! API работает через прокси. Получено ${Array.isArray(data) ? data.length : 'данные'}`)
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        setResult(`Ошибка: ${errorData.error || response.statusText}`)
       }
-      
-      setResult("Все эндпоинты недоступны. Проверьте сервер на localhost:8000")
       
     } catch (error) {
       setResult(`Исключение: ${error}`)
