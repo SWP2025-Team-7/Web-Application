@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const BACKEND_URL = 'http://localhost:8000'
 
@@ -37,7 +37,7 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     console.log('POST request received')
     const body = await request.json()

@@ -58,7 +58,7 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
       
       // Убеждаемся, что числовые поля имеют правильные значения
       // Бэкенд принимает только user_id и alias при создании
-      const validatedData = {
+      const validatedData: any = {
         user_id: Math.floor(Math.random() * 1000000) + 100000, // Генерируем ID в пределах int32
         alias: formData.alias,
       }

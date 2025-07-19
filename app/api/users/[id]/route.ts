@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 const BACKEND_URL = 'http://localhost:8000'
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id
+    const { id: userId } = await params
     
     const response = await fetch(`${BACKEND_URL}/users/${userId}`, {
       method: 'GET',
@@ -39,11 +39,11 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id
+    const { id: userId } = await params
     const body = await request.json()
     
     console.log(`PATCH request for user ${userId}:`, JSON.stringify(body, null, 2))
@@ -81,11 +81,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id
+    const { id: userId } = await params
     
     const response = await fetch(`${BACKEND_URL}/users/${userId}`, {
       method: 'DELETE',
