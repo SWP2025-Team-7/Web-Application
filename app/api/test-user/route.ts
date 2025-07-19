@@ -5,22 +5,18 @@ const BACKEND_URL = 'http://localhost:8000'
 export async function POST() {
   try {
     const testUser = {
-      alias: "test_user",
-      mail: "test@example.com",
+      user_id: Math.floor(Math.random() * 1000) + 100,
+      alias: "test_user_" + Math.floor(Math.random() * 1000),
+      mail: "test" + Math.floor(Math.random() * 1000) + "@example.com",
       name: "Тест",
       surname: "Пользователь",
-      patronymic: "Тестович",
       phone_number: "+7 (999) 123-45-67",
       citizens: "Россия",
       duty_to_work: "yes",
       duty_status: "working",
       grant_amount: 0,
       duty_period: 0,
-      company: "Тестовая компания",
-      position: "Тестер",
-      start_date: "2025-07-19",
-      end_date: "2025-12-31",
-      salary: 50000
+      salary: 0
     }
     
     const response = await fetch(`${BACKEND_URL}/users/`, {
