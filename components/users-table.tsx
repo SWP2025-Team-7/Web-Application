@@ -67,50 +67,17 @@ export default function UsersTable() {
     setError(null)
     
     try {
-      // Поскольку GET /users/ не работает, создадим тестовых пользователей
-      const testUsers: User[] = [
-        {
-          user_id: 354,
-          alias: "test_user_202",
-          mail: "test202@example.com",
-          name: "Тест",
-          surname: "Пользователь",
-          patronymic: "Тестович",
-          phone_number: "+7 (999) 123-45-67",
-          citizens: "Россия",
-          duty_to_work: "yes",
-          duty_status: "working",
-          grant_amount: 0,
-          duty_period: 0,
-          company: "Тестовая компания",
-          position: "Тестер",
-          start_date: "2025-07-19",
-          end_date: "2025-12-31",
-          salary: 50000
-        },
-        {
-          user_id: 123456,
-          alias: "demo_user",
-          mail: "demo@example.com",
-          name: "Демо",
-          surname: "Пользователь",
-          patronymic: "Демович",
-          phone_number: "+7 (999) 234-56-78",
-          citizens: "Россия",
-          duty_to_work: "no",
-          duty_status: "unemployed",
-          grant_amount: 10000,
-          duty_period: 12,
-          company: "",
-          position: "",
-          start_date: "",
-          end_date: "",
-          salary: 0
-        }
-      ]
+      const response = await ApiService.getUsers()
       
-      setUsers(testUsers)
+      if (response.error) {
+        console.log('API Error:', response.error)
+        setError('Ошибка при загрузке данных')
+      } else {
+        console.log('Loaded users from API:', response.data)
+        setUsers(response.data || [])
+      }
     } catch (error) {
+      console.error('Error fetching users:', error)
       setError('Ошибка при загрузке данных')
     } finally {
       setLoading(false)
