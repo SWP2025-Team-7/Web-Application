@@ -60,9 +60,9 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
       const validatedData = {
         ...formData,
         user_id: Date.now(), // Генерируем уникальный ID
-        grant_amount: formData.grant_amount || 0,
-        duty_period: formData.duty_period || 0,
-        salary: formData.salary || 0,
+        grant_amount: Math.min(formData.grant_amount || 0, 999999999), // Ограничиваем размер
+        duty_period: Math.min(formData.duty_period || 0, 999), // Ограничиваем период
+        salary: Math.min(formData.salary || 0, 999999999), // Ограничиваем зарплату
         // Убеждаемся, что все обязательные поля присутствуют
         alias: formData.alias,
         mail: formData.mail,
@@ -222,6 +222,8 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
                 <Input
                   id="grant_amount"
                   type="number"
+                  min="0"
+                  max="999999999"
                   value={formData.grant_amount}
                   onChange={(e) => handleInputChange('grant_amount', Number(e.target.value))}
                 />
@@ -232,6 +234,8 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
                 <Input
                   id="duty_period"
                   type="number"
+                  min="0"
+                  max="999"
                   value={formData.duty_period}
                   onChange={(e) => handleInputChange('duty_period', Number(e.target.value))}
                 />
@@ -280,6 +284,8 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
                 <Input
                   id="salary"
                   type="number"
+                  min="0"
+                  max="999999999"
                   value={formData.salary}
                   onChange={(e) => handleInputChange('salary', Number(e.target.value))}
                 />
