@@ -57,26 +57,10 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
       }
       
       // Убеждаемся, что числовые поля имеют правильные значения
+      // Бэкенд принимает только user_id и alias при создании
       const validatedData = {
-        ...formData,
-        user_id: Date.now(), // Генерируем уникальный ID
-        grant_amount: Math.min(formData.grant_amount || 0, 999999999), // Ограничиваем размер
-        duty_period: Math.min(formData.duty_period || 0, 999), // Ограничиваем период
-        salary: Math.min(formData.salary || 0, 999999999), // Ограничиваем зарплату
-        // Убеждаемся, что все обязательные поля присутствуют
+        user_id: Math.floor(Math.random() * 1000000) + 100000, // Генерируем ID в пределах int32
         alias: formData.alias,
-        mail: formData.mail,
-        name: formData.name,
-        surname: formData.surname,
-        patronymic: formData.patronymic || "",
-        phone_number: formData.phone_number,
-        citizens: formData.citizens,
-        duty_to_work: formData.duty_to_work,
-        duty_status: formData.duty_status,
-        company: formData.company || "",
-        position: formData.position || "",
-        start_date: formData.start_date || "",
-        end_date: formData.end_date || "",
       }
       
       console.log('Sending user data:', validatedData)
@@ -85,6 +69,32 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
       if (response.error) {
         setError(response.error)
       } else {
+        // После создания пользователя обновляем его с остальными данными
+        const updateData = {
+          mail: formData.mail,
+          name: formData.name,
+          surname: formData.surname,
+          patronymic: formData.patronymic || "",
+          phone_number: formData.phone_number,
+          citizens: formData.citizens,
+          duty_to_work: formData.duty_to_work,
+          duty_status: formData.duty_status,
+          grant_amount: Math.min(formData.grant_amount || 0, 999999999),
+          duty_period: Math.min(formData.duty_period || 0, 999),
+          company: formData.company || "",
+          position: formData.position || "",
+          start_date: formData.start_date || "",
+          end_date: formData.end_date || "",
+          salary: Math.min(formData.salary || 0, 999999999),
+        }
+        
+        console.log('Updating user with additional data:', updateData)
+        const updateResponse = await ApiService.updateUser(validatedData.user_id, updateData)
+        
+        if (updateResponse.error) {
+          console.log('User created but update failed:', updateResponse.error)
+        }
+        
         onUserAdded()
       }
     } catch (error) {
