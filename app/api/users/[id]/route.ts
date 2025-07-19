@@ -46,7 +46,7 @@ export async function PATCH(
     const userId = params.id
     const body = await request.json()
     
-    console.log(`PATCH request for user ${userId}:`, body)
+    console.log(`PATCH request for user ${userId}:`, JSON.stringify(body, null, 2))
     
     const response = await fetch(`${BACKEND_URL}/users/${userId}`, {
       method: 'PATCH',

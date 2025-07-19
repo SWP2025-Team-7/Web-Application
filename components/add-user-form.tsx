@@ -70,29 +70,32 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
         setError(response.error)
       } else {
         // После создания пользователя обновляем его с остальными данными
-        const updateData = {
+        const updateData: any = {
           mail: formData.mail,
           name: formData.name,
           surname: formData.surname,
-          patronymic: formData.patronymic || "",
           phone_number: formData.phone_number,
           citizens: formData.citizens,
           duty_to_work: formData.duty_to_work,
           duty_status: formData.duty_status,
           grant_amount: Math.min(formData.grant_amount || 0, 999999999),
           duty_period: Math.min(formData.duty_period || 0, 999),
-          company: formData.company || "",
-          position: formData.position || "",
-          start_date: formData.start_date || "",
-          end_date: formData.end_date || "",
           salary: Math.min(formData.salary || 0, 999999999),
         }
+        
+        // Добавляем необязательные поля только если они заполнены
+        if (formData.patronymic) updateData.patronymic = formData.patronymic
+        if (formData.company) updateData.company = formData.company
+        if (formData.position) updateData.position = formData.position
+        if (formData.start_date) updateData.start_date = formData.start_date
+        if (formData.end_date) updateData.end_date = formData.end_date
         
         console.log('Updating user with additional data:', updateData)
         const updateResponse = await ApiService.updateUser(validatedData.user_id, updateData)
         
         if (updateResponse.error) {
           console.log('User created but update failed:', updateResponse.error)
+          console.log('Update data that failed:', updateData)
         }
         
         onUserAdded()
