@@ -70,11 +70,12 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
         setError(response.error)
       } else {
         // После создания пользователя обновляем его с остальными данными
-        // Отправляем только основные поля, чтобы избежать ошибок валидации
+        // Отправляем основные поля, включая отчество
         const updateData: any = {
           mail: formData.mail || "",
           name: formData.name || "",
           surname: formData.surname || "",
+          patronymic: formData.patronymic || "",
           phone_number: formData.phone_number || "",
           citizens: formData.citizens || "",
           duty_to_work: formData.duty_to_work || "yes",
