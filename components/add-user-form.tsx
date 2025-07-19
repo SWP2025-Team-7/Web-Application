@@ -70,7 +70,7 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
         setError(response.error)
       } else {
         // После создания пользователя обновляем его с остальными данными
-        // Отправляем основные поля, включая отчество
+        // Отправляем все поля, включая рабочие данные
         const updateData: any = {
           mail: formData.mail || "",
           name: formData.name || "",
@@ -82,6 +82,10 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
           duty_status: formData.duty_status || "working",
           grant_amount: Math.min(formData.grant_amount || 0, 999999999),
           duty_period: Math.min(formData.duty_period || 0, 999),
+          company: formData.company || "",
+          position: formData.position || "",
+          start_date: formData.start_date || "",
+          end_date: formData.end_date || "",
           salary: Math.min(formData.salary || 0, 999999999),
         }
         
