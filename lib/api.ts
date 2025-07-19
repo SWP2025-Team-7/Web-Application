@@ -1,6 +1,6 @@
 import { User, ApiResponse } from './types'
 
-const API_BASE_URL = '/api'
+const API_BASE_URL = 'http://localhost:8000'
 
 export class ApiService {
   private static async request<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
