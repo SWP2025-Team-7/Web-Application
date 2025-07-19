@@ -40,6 +40,8 @@
 
 ## 🚀 Установка и запуск
 
+### Локальная разработка
+
 1. **Клонируйте репозиторий:**
    ```bash
    git clone https://github.com/SWP2025-Team-7/Web-Application.git
@@ -59,6 +61,49 @@
 4. **Откройте браузер:**
    ```
    http://localhost:3000
+   ```
+
+### Docker (Рекомендуется)
+
+1. **Клонируйте репозиторий:**
+   ```bash
+   git clone https://github.com/SWP2025-Team-7/Web-Application.git
+   cd Web-Application
+   ```
+
+2. **Запустите с помощью Docker Compose:**
+
+   **Linux/Mac:**
+   ```bash
+   chmod +x docker-run.sh
+   ./docker-run.sh
+   ```
+
+   **Windows:**
+   ```powershell
+   .\docker-run.ps1
+   ```
+
+   **Или вручную:**
+   ```bash
+   docker-compose up --build -d
+   ```
+
+3. **Откройте браузер:**
+   ```
+   http://localhost:3000
+   ```
+
+4. **Полезные команды:**
+   ```bash
+   # Просмотр логов
+   docker-compose logs -f
+
+   # Остановка контейнеров
+   docker-compose down
+
+   # Пересборка
+   docker-compose up --build -d
    ```
 
 ## 🔧 Конфигурация API
