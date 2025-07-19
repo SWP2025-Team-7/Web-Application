@@ -70,9 +70,9 @@ export default function UsersTable() {
       // Поскольку GET /users/ не работает, создадим тестовых пользователей
       const testUsers: User[] = [
         {
-          user_id: 1,
-          alias: "test_user",
-          mail: "test@example.com",
+          user_id: 354,
+          alias: "test_user_202",
+          mail: "test202@example.com",
           name: "Тест",
           surname: "Пользователь",
           patronymic: "Тестович",
@@ -87,25 +87,6 @@ export default function UsersTable() {
           start_date: "2025-07-19",
           end_date: "2025-12-31",
           salary: 50000
-        },
-        {
-          user_id: 2,
-          alias: "demo_user",
-          mail: "demo@example.com",
-          name: "Демо",
-          surname: "Пользователь",
-          patronymic: "Демович",
-          phone_number: "+7 (999) 234-56-78",
-          citizens: "Россия",
-          duty_to_work: "no",
-          duty_status: "unemployed",
-          grant_amount: 10000,
-          duty_period: 12,
-          company: "",
-          position: "",
-          start_date: "",
-          end_date: "",
-          salary: 0
         }
       ]
       
@@ -153,9 +134,14 @@ export default function UsersTable() {
       
       // Попробуем обновить на сервере, но не будем ждать ответа
       try {
-        await ApiService.updateUser(user.user_id, updatedUser)
+        // Отправляем только измененное поле
+        const updateData = {
+          [editingCell.col]: column.type === 'number' ? Number(editValue) : editValue
+        }
+        console.log('Updating user', user.user_id, 'with data:', updateData)
+        await ApiService.updateUser(user.user_id, updateData)
       } catch (error) {
-        console.log('Серверное обновление не удалось, но локальные изменения сохранены')
+        console.log('Серверное обновление не удалось, но локальные изменения сохранены:', error)
       }
     } catch (error) {
       setError('Ошибка при сохранении')
