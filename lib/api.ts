@@ -8,15 +8,19 @@ export class ApiService {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           ...options?.headers,
         },
+        mode: 'cors',
+        credentials: 'omit',
         ...options,
       })
 
       if (!response.ok) {
+        console.error(`API Error: ${response.status} ${response.statusText} for ${endpoint}`)
         const errorData = await response.json().catch(() => ({}))
         return {
-          error: errorData.detail || `HTTP error! status: ${response.status}`,
+          error: errorData.detail || `HTTP error! status: ${response.status} - ${response.statusText}`,
         }
       }
 
@@ -30,7 +34,7 @@ export class ApiService {
   }
 
   static async getUsers(): Promise<ApiResponse<User[]>> {
-    return this.request<User[]>('/users/')
+    return this.request<User[]>('/users')
   }
 
   static async getUser(userId: number): Promise<ApiResponse<User>> {
