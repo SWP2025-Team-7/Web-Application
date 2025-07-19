@@ -50,7 +50,25 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
     setError(null)
 
     try {
-      const response = await ApiService.createUser(formData as Omit<User, 'user_id'>)
+      // Убираем user_id из данных, так как он должен генерироваться сервером
+      const { user_id, ...userData } = formData
+      
+      // Валидация обязательных полей
+      if (!userData.alias || !userData.mail || !userData.name || !userData.surname || !userData.phone_number || !userData.citizens) {
+        setError('Пожалуйста, заполните все обязательные поля')
+        return
+      }
+      
+      // Убеждаемся, что числовые поля имеют правильные значения
+      const validatedData = {
+        ...userData,
+        grant_amount: userData.grant_amount || 0,
+        duty_period: userData.duty_period || 0,
+        salary: userData.salary || 0,
+      }
+      
+      console.log('Sending user data:', validatedData)
+      const response = await ApiService.createUser(validatedData)
       
       if (response.error) {
         setError(response.error)
@@ -230,7 +248,7 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
                 <Input
                   id="start_date"
                   type="date"
-                  value={formData.start_date}
+                  value={formData.start_date || ''}
                   onChange={(e) => handleInputChange('start_date', e.target.value)}
                 />
               </div>
@@ -240,7 +258,7 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
                 <Input
                   id="end_date"
                   type="date"
-                  value={formData.end_date}
+                  value={formData.end_date || ''}
                   onChange={(e) => handleInputChange('end_date', e.target.value)}
                 />
               </div>

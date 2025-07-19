@@ -19,6 +19,7 @@ export class ApiService {
       if (!response.ok) {
         console.error(`API Error: ${response.status} ${response.statusText} for ${endpoint}`)
         const errorData = await response.json().catch(() => ({}))
+        console.error('Error details:', errorData)
         return {
           error: errorData.detail || `HTTP error! status: ${response.status} - ${response.statusText}`,
         }

@@ -5,7 +5,6 @@ const BACKEND_URL = 'http://localhost:8000'
 export async function POST() {
   try {
     const testUser = {
-      user_id: 1,
       alias: "test_user",
       mail: "test@example.com",
       name: "Тест",
