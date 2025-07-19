@@ -14,23 +14,23 @@ export default function ApiTest() {
     setResult("Тестирование API...")
     
     try {
-      // Тестируем через наш прокси
-      const response = await fetch('/api/users', {
-        method: 'GET',
+      // Сначала тестируем создание пользователя
+      const createResponse = await fetch('/api/test-user', {
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
       })
       
-      console.log('Testing /api/users:', response.status, response.statusText)
+      console.log('Testing POST /api/test-user:', createResponse.status, createResponse.statusText)
       
-      if (response.ok) {
-        const data = await response.json()
-        setResult(`Успех! API работает через прокси. Получено ${Array.isArray(data) ? data.length : 'данные'}`)
+      if (createResponse.ok) {
+        const createData = await createResponse.json()
+        setResult(`Успех! Пользователь создан. ID: ${createData.user_id}`)
       } else {
-        const errorData = await response.json().catch(() => ({}))
-        setResult(`Ошибка: ${errorData.error || response.statusText}`)
+        const errorData = await createResponse.json().catch(() => ({}))
+        setResult(`Ошибка создания: ${errorData.error || createResponse.statusText}`)
       }
       
     } catch (error) {
