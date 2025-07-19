@@ -50,10 +50,13 @@ export class ApiService {
   }
 
   static async updateUser(userId: number, user: Partial<User>): Promise<ApiResponse<User>> {
-    return this.request<User>(`/users/${userId}`, {
+    console.log(`API Service: Updating user ${userId} with data:`, user)
+    const result = await this.request<User>(`/users/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(user),
     })
+    console.log(`API Service: Update result for user ${userId}:`, result)
+    return result
   }
 
   static async deleteUser(userId: number): Promise<ApiResponse<void>> {

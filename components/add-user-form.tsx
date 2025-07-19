@@ -11,7 +11,7 @@ import { User } from "@/lib/types"
 import { ApiService } from "@/lib/api"
 
 interface AddUserFormProps {
-  onUserAdded: () => void
+  onUserAdded: (user?: User) => void
   onCancel: () => void
 }
 
@@ -91,14 +91,42 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
         if (formData.end_date) updateData.end_date = formData.end_date
         
         console.log('Updating user with additional data:', updateData)
-        const updateResponse = await ApiService.updateUser(validatedData.user_id, updateData)
+        console.log('User ID for update:', validatedData.user_id)
         
-        if (updateResponse.error) {
-          console.log('User created but update failed:', updateResponse.error)
-          console.log('Update data that failed:', updateData)
+        try {
+          const updateResponse = await ApiService.updateUser(validatedData.user_id, updateData)
+          
+          if (updateResponse.error) {
+            console.log('User created but update failed:', updateResponse.error)
+            console.log('Update data that failed:', updateData)
+          } else {
+            console.log('User updated successfully:', updateResponse)
+          }
+        } catch (error) {
+          console.error('Error during user update:', error)
         }
         
-        onUserAdded()
+        // Вызываем callback для обновления таблицы с данными созданного пользователя
+        const createdUser: User = {
+          user_id: validatedData.user_id,
+          alias: validatedData.alias,
+          mail: formData.mail || "",
+          name: formData.name || "",
+          surname: formData.surname || "",
+          patronymic: formData.patronymic || "",
+          phone_number: formData.phone_number || "",
+          citizens: formData.citizens || "",
+          duty_to_work: formData.duty_to_work || "yes",
+          duty_status: formData.duty_status || "working",
+          grant_amount: Math.min(formData.grant_amount || 0, 999999999),
+          duty_period: Math.min(formData.duty_period || 0, 999),
+          company: formData.company || "",
+          position: formData.position || "",
+          start_date: formData.start_date || "",
+          end_date: formData.end_date || "",
+          salary: Math.min(formData.salary || 0, 999999999),
+        }
+        onUserAdded(createdUser)
       }
     } catch (error) {
       setError('Ошибка при создании пользователя')

@@ -386,9 +386,12 @@ export default function UsersTable() {
       
       {showAddForm && (
         <AddUserForm
-          onUserAdded={() => {
+          onUserAdded={(createdUser) => {
             setShowAddForm(false)
-            fetchUsers()
+            if (createdUser) {
+              // Добавляем созданного пользователя в таблицу
+              setUsers([...users, createdUser])
+            }
           }}
           onCancel={() => setShowAddForm(false)}
         />
