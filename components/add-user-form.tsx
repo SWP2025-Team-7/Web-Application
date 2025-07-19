@@ -63,6 +63,20 @@ export default function AddUserForm({ onUserAdded, onCancel }: AddUserFormProps)
         grant_amount: formData.grant_amount || 0,
         duty_period: formData.duty_period || 0,
         salary: formData.salary || 0,
+        // Убеждаемся, что все обязательные поля присутствуют
+        alias: formData.alias,
+        mail: formData.mail,
+        name: formData.name,
+        surname: formData.surname,
+        patronymic: formData.patronymic || "",
+        phone_number: formData.phone_number,
+        citizens: formData.citizens,
+        duty_to_work: formData.duty_to_work,
+        duty_status: formData.duty_status,
+        company: formData.company || "",
+        position: formData.position || "",
+        start_date: formData.start_date || "",
+        end_date: formData.end_date || "",
       }
       
       console.log('Sending user data:', validatedData)

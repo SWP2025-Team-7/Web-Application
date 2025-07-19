@@ -33,7 +33,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('POST request received')
     const body = await request.json()
+    
+    console.log('POST request to create user:', JSON.stringify(body, null, 2))
     
     const response = await fetch(`${BACKEND_URL}/users/`, {
       method: 'POST',
@@ -44,8 +47,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(body),
     })
 
+    console.log('Backend POST response:', response.status, response.statusText)
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
+      console.error('Backend error details:', JSON.stringify(errorData, null, 2))
       return NextResponse.json(
         { error: errorData.detail || `HTTP error! status: ${response.status}` },
         { status: response.status }
@@ -53,6 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json()
+    console.log('Backend success response:', JSON.stringify(data, null, 2))
     return NextResponse.json(data)
   } catch (error) {
     console.error('API Proxy Error:', error)
