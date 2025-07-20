@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, Download, Upload, RefreshCw, Edit, Save, X } from "lucide-react"
+import { Trash2, Plus, Download, Upload, RefreshCw, Edit, Save, X, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { User } from "@/lib/types"
 import { ApiService } from "@/lib/api"
 import AddUserForm from "./add-user-form"
+import { useRouter } from "next/navigation"
 
 interface TableColumn {
   key: keyof User
@@ -21,6 +22,7 @@ interface TableColumn {
 }
 
 export default function UsersTable() {
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -285,7 +287,7 @@ export default function UsersTable() {
                   {col.label}
                 </div>
               ))}
-              <div className="w-20 h-12 flex items-center justify-center bg-gray-100 text-sm font-medium">Действия</div>
+              <div className="w-32 h-12 flex items-center justify-center bg-gray-100 text-sm font-medium">Действия</div>
             </div>
 
             {/* Data Rows */}
@@ -316,7 +318,16 @@ export default function UsersTable() {
                     )}
                   </div>
                 ))}
-                <div className="w-20 h-12 flex items-center justify-center gap-1">
+                <div className="w-32 h-12 flex items-center justify-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/users/${user.user_id}`)}
+                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    title="Просмотреть"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

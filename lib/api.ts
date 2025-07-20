@@ -1,4 +1,4 @@
-import { User, ApiResponse } from './types'
+import { User, Document, ApiResponse } from './types'
 
 const API_BASE_URL = '/api'
 
@@ -70,5 +70,9 @@ export class ApiService {
       method: 'POST',
       body: JSON.stringify({ file_path: filePath }),
     })
+  }
+
+  static async getUserDocuments(userId: number): Promise<ApiResponse<Document[]>> {
+    return this.request<Document[]>(`/users/${userId}/documents/`)
   }
 } 
