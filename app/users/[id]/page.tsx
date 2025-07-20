@@ -107,7 +107,9 @@ export default function UserProfilePage() {
 
   const handleEditClick = () => {
     if (user) {
-      setEditData({ ...user })
+      const initialEditData = { ...user }
+      console.log('Initializing edit data:', initialEditData)
+      setEditData(initialEditData)
       setIsEditing(true)
       setSaveError(null)
     }
@@ -120,10 +122,15 @@ export default function UserProfilePage() {
   }
 
   const handleInputChange = (field: keyof UserType, value: string | number) => {
-    setEditData(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    console.log(`Updating field ${field} with value:`, value)
+    setEditData(prev => {
+      const updated = {
+        ...prev,
+        [field]: value
+      }
+      console.log('Updated edit data:', updated)
+      return updated
+    })
   }
 
   const handleSave = async () => {
@@ -132,18 +139,25 @@ export default function UserProfilePage() {
     setSaving(true)
     setSaveError(null)
 
+    console.log('Saving user data:', editData)
+
     try {
       const response = await ApiService.updateUser(user.user_id, editData)
+      
+      console.log('API response:', response)
       
       if (response.error) {
         setSaveError(response.error)
       } else {
         // Обновляем локальное состояние
-        setUser(response.data || { ...user, ...editData })
+        const updatedUser = response.data || { ...user, ...editData }
+        console.log('Updated user:', updatedUser)
+        setUser(updatedUser)
         setIsEditing(false)
         setEditData({})
       }
     } catch (error) {
+      console.error('Save error:', error)
       setSaveError('Ошибка при сохранении данных')
     } finally {
       setSaving(false)
