@@ -7,15 +7,11 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY package.json package-lock.json* pnpm-lock.yaml* ./
-# Устанавливаем зависимости
-RUN npm ci --only=production
+COPY package*.json .
 
-# Пересобираем исходный код только при необходимости
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+RUN npm install
+RUN npm ci
+
 COPY . .
 
 # Собираем приложение
