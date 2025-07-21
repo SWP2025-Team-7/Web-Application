@@ -1,6 +1,4 @@
-networks:
-  web:
-    external: true
+version: '3.8'
 
 services:
   web:
@@ -11,8 +9,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - HOST=0.0.0.0
+      - NODE_ENV=production
       - PORT=3000
+      - HOSTNAME=0.0.0.0
+    volumes:
+      - ./.next:/app/.next
     restart: unless-stopped
     networks:
       - web

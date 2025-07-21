@@ -18,6 +18,15 @@ export interface User {
   salary: number
 }
 
+export interface Document {
+  id: number
+  file_name: string
+  file_path: string
+  file_type: string
+  user_id: number
+  created_at: string
+}
+
 export interface ApiResponse<T> {
   data?: T
   error?: string

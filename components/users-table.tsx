@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, Download, Upload, RefreshCw, Edit, Save, X } from "lucide-react"
+import { Trash2, Plus, Download, Upload, RefreshCw, Edit, Save, X, Eye } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { User } from "@/lib/types"
 import { ApiService } from "@/lib/api"
 import AddUserForm from "./add-user-form"
+import { useRouter } from "next/navigation"
 
 interface TableColumn {
   key: keyof User
@@ -21,6 +22,7 @@ interface TableColumn {
 }
 
 export default function UsersTable() {
+  const router = useRouter()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -74,6 +76,7 @@ export default function UsersTable() {
         setError('Ошибка при загрузке данных')
       } else {
         console.log('Loaded users from API:', response.data)
+        console.log('Users details:', response.data?.map(u => ({ id: u.user_id, status: u.duty_status, duty: u.duty_to_work })))
         setUsers(response.data || [])
       }
     } catch (error) {
@@ -93,6 +96,7 @@ export default function UsersTable() {
     if (!column?.editable) return
 
     const currentValue = users[rowIndex][colKey]
+    console.log('Starting edit for cell:', { row: rowIndex, col: colKey, currentValue })
     setEditingCell({ row: rowIndex, col: colKey })
     setEditValue(String(currentValue))
   }
@@ -108,28 +112,56 @@ export default function UsersTable() {
     setSaving(true)
     
     try {
+      console.log('Editing cell:', editingCell, 'Value:', editValue)
+      
+      // Проверяем корректность значений для select полей
+      let finalValue = editValue
+      if (column.type === 'select') {
+        if (column.key === 'duty_status' && !['working', 'unemployed', 'student'].includes(editValue)) {
+          console.error('Invalid duty_status value:', editValue)
+          setError('Некорректное значение статуса')
+          return
+        }
+        if (column.key === 'duty_to_work' && !['yes', 'no'].includes(editValue)) {
+          console.error('Invalid duty_to_work value:', editValue)
+          setError('Некорректное значение обязанности работать')
+          return
+        }
+      }
+      
       // Обновляем локально, так как API может не работать
       const updatedUser = {
         ...user,
         [editingCell.col]: column.type === 'number' ? Number(editValue) : editValue
       }
 
+      console.log('Updated user:', updatedUser)
+
       const newUsers = [...users]
       newUsers[editingCell.row] = updatedUser
       setUsers(newUsers)
       
-      // Попробуем обновить на сервере, но не будем ждать ответа
+      // Попробуем обновить на сервере
       try {
-        // Отправляем только измененное поле
+        // Отправляем полный объект пользователя с обновленным полем
         const updateData = {
+          ...user,
           [editingCell.col]: column.type === 'number' ? Number(editValue) : editValue
         }
         console.log('Updating user', user.user_id, 'with data:', updateData)
-        await ApiService.updateUser(user.user_id, updateData)
+        const response = await ApiService.updateUser(user.user_id, updateData)
+        console.log('API response:', response)
+        
+        // Если API вернул обновленные данные, используем их
+        if (response.data) {
+          newUsers[editingCell.row] = response.data
+          setUsers([...newUsers])
+        }
       } catch (error) {
         console.log('Серверное обновление не удалось, но локальные изменения сохранены:', error)
       }
     } catch (error) {
+      console.error('Edit error:', error)
       setError('Ошибка при сохранении')
     } finally {
       setSaving(false)
@@ -189,10 +221,14 @@ export default function UsersTable() {
 
   const renderEditInput = (column: TableColumn) => {
     if (column.type === 'select' && column.options) {
+      console.log('Rendering select for column:', column.key, 'Value:', editValue, 'Options:', column.options)
       return (
         <select
           value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
+          onChange={(e) => {
+            console.log('Select changed:', e.target.value)
+            setEditValue(e.target.value)
+          }}
           onBlur={handleEditSubmit}
           onKeyDown={handleKeyDown}
           className="h-8 border-0 p-1 bg-white shadow-none focus-visible:ring-0 w-full"
@@ -285,7 +321,7 @@ export default function UsersTable() {
                   {col.label}
                 </div>
               ))}
-              <div className="w-20 h-12 flex items-center justify-center bg-gray-100 text-sm font-medium">Действия</div>
+              <div className="w-32 h-12 flex items-center justify-center bg-gray-100 text-sm font-medium">Действия</div>
             </div>
 
             {/* Data Rows */}
@@ -316,7 +352,16 @@ export default function UsersTable() {
                     )}
                   </div>
                 ))}
-                <div className="w-20 h-12 flex items-center justify-center gap-1">
+                <div className="w-32 h-12 flex items-center justify-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => router.push(`/users/${user.user_id}`)}
+                    className="h-8 w-8 p-0 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    title="Просмотреть"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
