@@ -44,8 +44,9 @@ const MOCK_USERS = [
   }
 ]
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const auth = request.headers.get('authorization')
     console.log('Fetching all users from backend...')
     
     // Пробуем подключиться к реальному бэкенду
@@ -55,6 +56,7 @@ export async function GET() {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          ...(auth ? { 'Authorization': auth } : {}),
         },
       })
 
@@ -71,7 +73,7 @@ export async function GET() {
 
       const data = await response.json()
       console.log(`Loaded ${data.length} users from backend`)
-      return NextResponse.json(data)
+      return NextResponse.json(data, { status: response.status })
     } catch (backendError) {
       console.log('Backend недоступен, используем моковые данные:', backendError)
       return NextResponse.json(MOCK_USERS)
@@ -87,8 +89,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const auth = request.headers.get('authorization')
     console.log('POST request received')
-    const body = await request.json()
+    const body = await request.text()
     
     console.log('POST request to create user:', JSON.stringify(body, null, 2))
     
@@ -99,8 +102,9 @@ export async function POST(request: Request) {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
+          ...(auth ? { 'Authorization': auth } : {}),
         },
-        body: JSON.stringify(body),
+        body,
       })
 
       console.log('Backend POST response:', response.status, response.statusText)
@@ -116,7 +120,7 @@ export async function POST(request: Request) {
 
       const data = await response.json()
       console.log('Backend success response:', JSON.stringify(data, null, 2))
-      return NextResponse.json(data)
+      return NextResponse.json(data, { status: response.status })
     } catch (backendError) {
       console.log('Backend недоступен, создаем мокового пользователя:', backendError)
       const newUser = {

@@ -5,12 +5,18 @@ const API_BASE_URL = '/api'
 export class ApiService {
   private static async request<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
     try {
+      // Получаем токен из localStorage
+      const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...options?.headers,
+      }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...options?.headers,
-        },
+        headers,
         mode: 'cors',
         credentials: 'omit',
         ...options,

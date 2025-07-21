@@ -143,9 +143,10 @@ export default function UsersTable() {
       
       // Попробуем обновить на сервере
       try {
-        // Отправляем полный объект пользователя с обновленным полем
+        // Отправляем полный объект пользователя с обновленным полем и user_id
         const updateData = {
           ...user,
+          user_id: user.user_id, // обязательно!
           [editingCell.col]: column.type === 'number' ? Number(editValue) : editValue
         }
         console.log('Updating user', user.user_id, 'with data:', updateData)

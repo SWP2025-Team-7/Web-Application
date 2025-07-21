@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Eye, EyeOff } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
 
 interface LoginFormProps {
   onLoginSuccess?: (user: any) => void
@@ -14,8 +15,9 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onLoginSuccess, onLoginError }: LoginFormProps) {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: ""
   })
   const [loading, setLoading] = useState(false)
@@ -27,56 +29,25 @@ export default function LoginForm({ onLoginSuccess, onLoginError }: LoginFormPro
       ...prev,
       [field]: value
     }))
-    // Очищаем ошибку при вводе
     if (error) setError(null)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!formData.email || !formData.password) {
+    if (!formData.username || !formData.password) {
       setError("Пожалуйста, заполните все поля")
       return
     }
-
     setLoading(true)
     setError(null)
-
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Ошибка авторизации')
-      }
-
-      console.log('Login successful:', data)
-      
-      // Вызываем callback при успешной авторизации
-      if (onLoginSuccess) {
-        onLoginSuccess(data)
-      }
-      
-      // Очищаем форму
-      setFormData({ email: "", password: "" })
-      
+      await login(formData.username, formData.password)
+      if (onLoginSuccess) onLoginSuccess({ username: formData.username })
+      setFormData({ username: "", password: "" })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка авторизации'
       setError(errorMessage)
-      
-      if (onLoginError) {
-        onLoginError(errorMessage)
-      }
+      if (onLoginError) onLoginError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -100,20 +71,18 @@ export default function LoginForm({ onLoginSuccess, onLoginError }: LoginFormPro
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Логин</Label>
               <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Введите ваш email"
+                id="username"
+                type="text"
+                value={formData.username}
+                onChange={(e) => handleInputChange('username', e.target.value)}
+                placeholder="Введите ваш логин"
                 required
                 disabled={loading}
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Пароль</Label>
               <div className="relative">
@@ -142,7 +111,6 @@ export default function LoginForm({ onLoginSuccess, onLoginError }: LoginFormPro
                 </Button>
               </div>
             </div>
-
             <Button 
               type="submit" 
               className="w-full" 
