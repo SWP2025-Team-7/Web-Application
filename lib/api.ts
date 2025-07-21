@@ -7,16 +7,16 @@ export class ApiService {
     try {
       // Получаем токен из localStorage
       const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null
-      const headers: HeadersInit = {
+      let headers: HeadersInit = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         ...options?.headers,
       }
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-        headers,
+        headers: {
+          ...headers,
+          'Authorization': token ? `Bearer ${token}` : '',
+        },
         mode: 'cors',
         credentials: 'omit',
         ...options,
